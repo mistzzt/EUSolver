@@ -149,7 +149,7 @@ class MultiPointVerifier(VerifierBase):
         self.var_info_list = spec.get_point_variables()
 
         var_expr_list = [exprs.VariableExpression(x) for x in self.var_info_list]
-        self.var_smt_expr_list = [_expr_to_smt(x, self.smt_ctx) 
+        self.var_smt_expr_list = [_expr_to_smt(x, self.smt_ctx)
                 for x in var_expr_list]
 
     def _verify_expr(self, term):
@@ -168,14 +168,15 @@ class MultiPointVerifier(VerifierBase):
         smt_solver.push()
         smt_solver.add(full_constraint)
         r = smt_solver.check()
-        smt_solver.pop()
 
         if (r == z3.sat):
             cex_point = model_to_point(smt_solver.model(),
                                        self.var_smt_expr_list,
                                        self.var_info_list)
+            smt_solver.pop()
             return [cex_point]
         else:
+            smt_solver.pop()
             return term
 
     def verify(self, unification):
@@ -199,13 +200,13 @@ class StdVerifier(VerifierBase):
         self.var_info_list = spec.get_point_variables()
         var_expr_list = [exprs.VariableExpression(x) for x in self.var_info_list]
         self.var_smt_expr_list = [_expr_to_smt(x, self.smt_ctx) for x in var_expr_list]
-        
+
         self.intro_vars = spec.get_intro_vars()
         self.smt_intro_vars = [_expr_to_smt(x, self.smt_ctx) for x in self.intro_vars]
 
         fun_apps = [ syn_ctx.make_function_expr(f, *self.intro_vars) for f in self.synth_funs ]
         fun_app_subst_vars = [ syn_ctx.make_variable_expr(f.range_type, '__output__' + f.function_name) for f in self.synth_funs ]
-        self.outvar_cnstr = syn_ctx.make_function_expr('and', *[ 
+        self.outvar_cnstr = syn_ctx.make_function_expr('and', *[
             syn_ctx.make_function_expr('eq', v, a) for (v, a) in zip(fun_app_subst_vars, fun_apps) ])
         self.canon_spec = spec.get_canonical_specification()
         canon_spec_with_outvar = exprs.substitute_all(self.canon_spec, list(zip(fun_apps, fun_app_subst_vars)))
@@ -217,6 +218,7 @@ class StdVerifier(VerifierBase):
     def _verify_expr(self, term):
         smt_ctx = self.smt_ctx
         smt_solver = self.smt_solver
+        # print('Verifying: %s' % exprs.expression_to_string(term))
 
         if len(self.synth_funs) == 1:
             smt_ctx.set_interpretation(self.synth_funs[0], term)
@@ -231,14 +233,15 @@ class StdVerifier(VerifierBase):
         # print("2:", smt_solver)
         r = smt_solver.check()
         # print("3:", smt_solver.model())
-        smt_solver.pop()
 
         if (r == z3.sat):
             cex_point = model_to_point(smt_solver.model(),
                                        self.var_smt_expr_list,
                                        self.var_info_list)
+            smt_solver.pop()
             return [cex_point]
         else:
+            smt_solver.pop()
             return term
 
     def _verify_guard_term_list(self, guard_term_list, dt_tuple):
@@ -273,14 +276,15 @@ class StdVerifier(VerifierBase):
                 smt_solver.push()
                 smt_solver.add(eq_cnstr)
                 r = smt_solver.check()
-                smt_solver.pop()
                 if (r == z3.sat):
                     cex_points.append(model_to_point(smt_solver.model(),
                                                      self.var_smt_expr_list,
                                                      self.var_info_list))
+                    smt_solver.pop()
                 else:
                     all_terms_failed = False
                     selected_leaf_terms.append(term)
+                    smt_solver.pop()
                     break
 
             if (all_terms_failed):
@@ -322,6 +326,14 @@ class StdVerifier(VerifierBase):
         smt_solver.add(eq_cnstr)
         r = smt_solver.check()
 
+        if (r == z3.sat):
+            cex_point = model_to_point(smt_solver.model(),
+                                       self.var_smt_expr_list,
+                                       self.var_info_list)
+            result = [cex_point]
+        else:
+            result = None
+
         # print(smt_solver)
         # print(smt_solver.model())
         # print("----------")
@@ -330,13 +342,7 @@ class StdVerifier(VerifierBase):
         smt_solver.push()
         smt_solver.add(self.frozen_smt_cnstr)
 
-        if (r == z3.sat):
-            cex_point = model_to_point(smt_solver.model(),
-                                       self.var_smt_expr_list,
-                                       self.var_info_list)
-            return [cex_point]
-        else:
-            return None
+        return result
 
 
 class PBEVerifier(VerifierBase):
@@ -344,7 +350,7 @@ class PBEVerifier(VerifierBase):
         self.spec = spec
         self.valuations = self.spec.valuations
         self.syn_ctx = syn_ctx
-        self.eval_ctx = self.spec.eval_ctx 
+        self.eval_ctx = self.spec.eval_ctx
 
     def _verify_expr(self, term):
         eval_ctx = self.eval_ctx

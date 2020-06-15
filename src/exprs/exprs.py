@@ -376,12 +376,13 @@ def _z3_solve(z3_expr, arg_vars):
     smt_solver.push()
     smt_solver.add(z3_expr)
     r = smt_solver.check()
-    smt_solver.pop()
 
     if r == z3.sat:
         point = [ smt_solver.model().evaluate(arg_var, True) for arg_var in arg_vars ]
+        smt_solver.pop()
         return point
     else:
+        smt_solver.pop()
         return None
 
 

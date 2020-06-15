@@ -8,7 +8,7 @@ EUSOLVER_ROOT=`pwd`
 # or leave it blank if z3 modules exist in the standard python3 path
 HAVE_Z3=yes
 
-# Z3_PYTHON_PATH=$LOCAL_Z3_ROOT/thirdparty/z3/build/python
+# Z3_PYTHON_PATH=$EUSOLVER_ROOT/thirdparty/z3/build/python
 REBUILD_LOCAL_Z3=no
 
 # --------------------------------------
@@ -27,7 +27,7 @@ popd
 # Build z3
 if [ x"$HAVE_Z3" = "xno" ]; then
 	echo "Using local copy of z3..."
-	echo "Checking if z3 is already built..." 
+	echo "Checking if z3 is already built..."
 	if [ -e "$LOCAL_Z3_ROOT"/build/libz3.so ] && [ -e "$LOCAL_Z3_ROOT"/build/python/z3 ]; then
 		echo "Z3 already built. Not rebuilding..."
 		echo "Set REBUILD_LOCAL_Z3 to yes to rebuild anyway..."
