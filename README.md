@@ -12,7 +12,7 @@ Supported platforms for this Nix derivation include:
 
 ### Prerequisites
 
-To use this fork of EUSolver, make sure you have Nix installed on your system. If not, follow the instructions provided in the [Nix installation guide][nix].\
+To use this fork of EUSolver, make sure you have Nix installed on your system. If not, follow the instructions provided in the [Nix installation guide][nix].
 
 ### Building EUSolver
 
