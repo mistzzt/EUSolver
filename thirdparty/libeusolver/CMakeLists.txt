@@ -33,6 +33,8 @@ set(CMAKE_C_FLAGS_DEBUG
   "-pipe -Wall -pedantic -ggdb3 -fno-inline -O0 -fPIC -std=c11"
   CACHE STRING "C compiler flags for debug build" FORCE)
 
+set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
+
 set(LIBEUSOLVER_CXX_SOURCE_FILES
   src/BitSet.cpp
   src/BitSetCAPI.cpp

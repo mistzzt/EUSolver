@@ -549,7 +549,7 @@ class StreamGenerator(GeneratorBase):
         # total_exps = 0
         # logging_enabled = self.enable_logging
         # if (logging_enabled):
-        #     generation_start_time = time.clock()
+        #     generation_start_time = time.process_time()
 
         max_size = self.max_size
         sub_generator_object = self.generator_object
@@ -558,7 +558,7 @@ class StreamGenerator(GeneratorBase):
             total_of_current_size = 0
             sub_generator_object.set_size(current_size)
             # if (logging_enabled):
-            #     current_size_start_time = time.clock()
+            #     current_size_start_time = time.process_time()
 
             sub_generator_state = sub_generator_object.generate()
             while (True):
@@ -568,7 +568,7 @@ class StreamGenerator(GeneratorBase):
                     yield retval
                 except StopIteration:
                     # if (logging_enabled):
-                    #     current_size_end_time = time.clock()
+                    #     current_size_end_time = time.process_time()
                     #     current_size_time = current_size_end_time - current_size_start_time
                     #     cumulative_size_time = current_size_end_time - generation_start_time
                     #     total_exps += total_of_current_size
